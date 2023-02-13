@@ -2496,6 +2496,13 @@ default_t defaults[] = {
     "0 original, 1 blocky (hires)"
   },
 
+  {
+    "fuzzdark_mode",
+    (config_t *) &fuzzdark_mode, NULL,
+    {0}, {0,1}, number, ss_enem, wad_no,
+    "0 original, 1 selective"
+  },
+
   {NULL}         // last entry
 };
 

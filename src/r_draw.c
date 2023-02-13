@@ -453,6 +453,9 @@ void R_SetFuzzPosDraw(void)
 //  i.e. spectres and invisible players.
 //
 
+static const int fuzzdark = 6 * 256;
+int fuzzdark_mode;
+
 static void R_DrawFuzzColumn_orig(void)
 { 
   int      count; 
@@ -507,7 +510,8 @@ static void R_DrawFuzzColumn_orig(void)
       // fraggle 1/8/2000: fix with the bugfix from lees
       // why_i_left_doom.html
 
-      *dest = fullcolormap[6*256+dest[fuzzoffset[fuzzpos++] ? linesize : -linesize]];
+      const int dark = (!fuzzdark_mode || (fuzzoffset[fuzzpos] == -1 && (count != dc_yh - dc_yl + 1))) ? fuzzdark : 0;
+      *dest = fullcolormap[dark+dest[fuzzoffset[fuzzpos++] ? linesize : -linesize]];
       dest += linesize;             // killough 11/98
 
       // Clamp table lookup index.
@@ -519,7 +523,8 @@ static void R_DrawFuzzColumn_orig(void)
   // draw one extra line using only pixels of that line and the one above
   if (cutoff)
   {
-    *dest = fullcolormap[6*256+dest[linesize*fuzzoffset[fuzzpos]]];
+    const int dark = (!fuzzdark_mode || fuzzoffset[fuzzpos] == 0) ? fuzzdark : 0;
+    *dest = fullcolormap[dark+dest[linesize*fuzzoffset[fuzzpos]]];
   }
 }
 
@@ -572,7 +577,8 @@ static void R_DrawFuzzColumn_block(void)
     {
       // [FG] draw only even pixels as 2x2 squares
       //      using the same fuzzoffset value
-      const byte fuzz = fullcolormap[6*256+dest[fuzzoffset[fuzzpos] ? 2*linesize : -2*linesize]];
+      const int dark = (!fuzzdark_mode || (fuzzoffset[fuzzpos] == -1 && (count != dc_yh - dc_yl + 2))) ? fuzzdark : 0;
+      const byte fuzz = fullcolormap[dark+dest[fuzzoffset[fuzzpos] ? 2*linesize : -2*linesize]];
 
       dest[0] = fuzz;
       dest[1] = fuzz;
@@ -589,7 +595,8 @@ static void R_DrawFuzzColumn_block(void)
 
   if (cutoff)
     {
-      const byte fuzz = fullcolormap[6*256+dest[2*linesize*fuzzoffset[fuzzpos]]];
+      const int dark = (!fuzzdark_mode || fuzzoffset[fuzzpos] == 0) ? fuzzdark : 0;
+      const byte fuzz = fullcolormap[dark+dest[2*linesize*fuzzoffset[fuzzpos]]];
 
       dest[0] = fuzz;
       dest[1] = fuzz;
