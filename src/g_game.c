@@ -768,7 +768,6 @@ static void G_DoLoadLevel(void)
    }
 
   critical = (gameaction == ga_playdemo || demorecording || demoplayback || D_CheckNetConnect());
-  M_UpdateCriticalItems();
 
   // [crispy] pistol start
   if (CRITICAL(pistolstart))
@@ -2802,7 +2801,7 @@ static int G_GetHelpers(void)
     //
 
     j = M_CheckParm ("-dogs");
-  return j ? j+1 < myargc ? M_ParmArgToInt(j) : 1 : default_dogs;
+  return j ? (j+1 < myargc && myargv[j+1][0] != '-') ? M_ParmArgToInt(j) : 1 : default_dogs;
 }
 
 // [FG] support named complevels on the command line, e.g. "-complevel boom",
@@ -3112,6 +3111,9 @@ void G_ReloadDefaults(boolean keep_demover)
 
   if (beta_emulation && demo_version != 203)
     I_Error("G_ReloadDefaults: Beta emulation requires complevel MBF.");
+
+  if ((M_CheckParm("-dog") || M_CheckParm("-dogs")) && demo_version < 203)
+    I_Error("G_ReloadDefaults: Helper dogs require complevel MBF or MBF21.");
 
   if (demo_version < 203)
   {
